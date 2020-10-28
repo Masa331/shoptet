@@ -1,6 +1,6 @@
 module Shoptet
-  class ShoptetApi
-    class ShoptetApiError < StandardError
+  class Api
+    class Error < StandardError
       attr_reader :additional_data
 
       def initialize message, additional_data = {}
