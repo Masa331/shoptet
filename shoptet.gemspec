@@ -2,7 +2,7 @@ require_relative 'lib/shoptet/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'shoptet'
-  spec.version       = Shoptet::VERSION
+  spec.version       = Shoptet.version
   spec.authors       = ['Premysl Donat']
   spec.email         = ['pdonat@seznam.cz']
 

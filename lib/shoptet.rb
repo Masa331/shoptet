@@ -1,4 +1,9 @@
+require_relative 'shoptet/request'
+require_relative 'shoptet/api'
+require_relative 'shoptet/shop'
+
 module Shoptet
-  class Error < StandardError; end
-  # Your code goes here...
+  def self.version
+    '0.0.1'
+  end
 end
