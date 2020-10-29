@@ -1,0 +1,23 @@
+PATH
+  remote: .
+  specs:
+    shoptet (0.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    io-console (0.5.6)
+    irb (1.2.7)
+      reline (>= 0.1.5)
+    reline (0.1.6)
+      io-console (~> 0.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  irb
+  shoptet!
+
+BUNDLED WITH
+   2.1.4
