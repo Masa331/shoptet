@@ -106,22 +106,7 @@ class Shoptet
     headers = { 'Authorization' => "Bearer #{@oauth_token}" }
 
     result = Shoptet::Request.get @oauth_url, headers
-    handle_errors result
-
-    # error = result['error']
-    # errors = result['errors'] || []
-    #
-    # #TODO: unite error handling with #request
-    # if error || errors.any?
-    #   additional_data = {
-    #     uri: @oauth_url,
-    #     headers: scrub_sensitive_headers(headers)
-    #   }
-    #
-    #   raise Error.new result, additional_data
-    # else
-    #   result.fetch 'access_token'
-    # end
+    handle_errors result, @oauth_url
 
     result.fetch 'access_token'
   end
@@ -160,7 +145,7 @@ class Shoptet
                 'Content-Type' => 'application/vnd.shoptet.v1.0' }
 
     result = Shoptet::Request.get uri, headers
-    token_errors = handle_errors result
+    token_errors = handle_errors result, uri
 
     if token_errors.any?
       @on_token_error.call self
@@ -170,7 +155,7 @@ class Shoptet
     end
   end
 
-  def handle_errors result
+  def handle_errors result, uri
     error = result['error']
     errors = result['errors'] || []
     token_errors, non_token_errors = errors.partition { |err| ['invalid-token', 'expired-token'].include? err['errorCode'] }
