@@ -11,13 +11,14 @@ class Shoptet
     end
   end
   class AddonSuspended < StandardError; end
+  class AddonNotInstalled < StandardError; end
 
   DEFAULT_ON_TOKEN_ERROR = -> (api) do
     api.api_token = api.new_api_token
   end
 
   def self.version
-    '0.0.2'
+    '0.0.3'
   end
 
   def self.ar_on_token_error(model)
@@ -106,7 +107,7 @@ class Shoptet
     headers = { 'Authorization' => "Bearer #{@oauth_token}" }
 
     result = Shoptet::Request.get @oauth_url, headers
-    handle_errors result, @oauth_url
+    handle_errors result, @oauth_url, headers
 
     result.fetch 'access_token'
   end
@@ -140,22 +141,26 @@ class Shoptet
     end
   end
 
-  def request uri
+  def request uri, retry_on_token_error = true
     headers = { 'Shoptet-Access-Token' => @api_token,
                 'Content-Type' => 'application/vnd.shoptet.v1.0' }
 
     result = Shoptet::Request.get uri, headers
-    token_errors = handle_errors result, uri
+    token_errors = handle_errors result, uri, headers
 
     if token_errors.any?
-      @on_token_error.call self
-      request uri
+      if retry_on_token_error
+        @on_token_error.call self
+        request uri, false
+      else
+        raise Error.new result
+      end
     else
       result
     end
   end
 
-  def handle_errors result, uri
+  def handle_errors result, uri, headers
     error = result['error']
     errors = result['errors'] || []
     token_errors, non_token_errors = errors.partition { |err| ['invalid-token', 'expired-token'].include? err['errorCode'] }
@@ -163,6 +168,8 @@ class Shoptet
     if error || non_token_errors.any?
       if error == 'addon_suspended'
         raise AddonSuspended
+      elsif error == 'addon_not_installed'
+        raise AddonNotInstalled
       else
         additional_data = {
           uri: uri,
