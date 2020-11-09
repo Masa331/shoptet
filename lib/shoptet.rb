@@ -47,8 +47,13 @@ class Shoptet
     @on_token_error = on_token_error || DEFAULT_ON_TOKEN_ERROR
   end
 
+  #TODO: return ['data'] already
   def shop_info api_params = {}
     request 'https://api.myshoptet.com/api/eshop'
+  end
+
+  def design_info api_params = {}
+    request 'https://api.myshoptet.com/api/eshop/design'
   end
 
   def warehouses api_params = {}
@@ -94,7 +99,7 @@ class Shoptet
   def order code, api_params = {}
     uri = "https://api.myshoptet.com/api/orders/#{code}"
     result = request assemble_uri(uri, api_params)
-    result.dig('data', 'order').merge(detail_url: uri)
+    result.dig('data', 'order')
   end
 
   def product guid, api_params = {}
@@ -131,12 +136,12 @@ class Shoptet
       total_pages = first_page.dig('data', 'paginator', 'pageCount') || 0
       other_pages = 2..total_pages
 
-      first_page.dig('data', data_key).each { y.yield _1.merge(page_url: uri) }
+      first_page.dig('data', data_key).each { y.yield _1 }
 
       other_pages.each do |page|
         uri = assemble_uri base_uri, filters.merge(page: page)
         result = request uri
-        result.dig('data', data_key).each { y.yield _1.merge(page_url: uri) }
+        result.dig('data', data_key).each { y.yield _1 }
       end
     end
   end
