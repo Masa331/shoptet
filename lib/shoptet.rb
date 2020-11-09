@@ -12,13 +12,14 @@ class Shoptet
   end
   class AddonSuspended < StandardError; end
   class AddonNotInstalled < StandardError; end
+  class InvalidTokenNoRights < StandardError; end
 
   DEFAULT_ON_TOKEN_ERROR = -> (api) do
     api.api_token = api.new_api_token
   end
 
   def self.version
-    '0.0.4'
+    '0.0.5'
   end
 
   def self.ar_on_token_error(model)
@@ -175,6 +176,8 @@ class Shoptet
         raise AddonSuspended
       elsif error == 'addon_not_installed'
         raise AddonNotInstalled
+      elsif errors.any? { |err| err["errorCode"] == 'invalid-token-no-rights' }
+        raise InvalidTokenNoRights
       else
         additional_data = {
           uri: uri,
