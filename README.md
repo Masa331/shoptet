@@ -1,8 +1,6 @@
 # Shoptet
 
-This is Ruby API wrapper for [Shoptet API](https://developers.shoptet.com/) which provides access to e-shop data for addon developers.
-
-This is currently under development and hasn't been released to Rubygems yet.
+This is Ruby API wrapper for [Shoptet API](https://shoptet.docs.apiary.io) which provides access to e-shop data for addon developers.
 
 # How to install
 
@@ -82,6 +80,7 @@ Also they accept hash with params which will be passed to Shoptet api. Through t
 ## Other
 
 * `Shoptet#new_api_token` - this returns new api token created with oauth token
+* `Shoptet::install` - TODO
 
 ## License
 

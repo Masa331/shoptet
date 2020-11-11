@@ -1,15 +1,7 @@
 require_relative 'shoptet/request'
 
 class Shoptet
-  class Error < StandardError
-    #TODO: check that this works
-    attr_reader :additional_data
-
-    def initialize message, additional_data = {}
-      super(message)
-      @additional_data = additional_data
-    end
-  end
+  class Error < StandardError; end
   class AddonSuspended < StandardError; end
   class AddonNotInstalled < StandardError; end
   class InvalidTokenNoRights < StandardError; end
@@ -19,7 +11,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.5'
+    '0.0.6'
   end
 
   def self.ar_on_token_error(model)
@@ -39,6 +31,19 @@ class Shoptet
     end
   end
 
+  def self.install uri, redirect_uri, client_id, client_secret, code
+    data = {
+      'redirect_uri' => redirect_uri,
+      'client_id' => client_id,
+      'client_secret' => client_secret,
+      'code' => code,
+      'grant_type' => 'authorization_code',
+      'scope' => 'api'
+    }
+
+    Shoptet::Request.post uri, data
+  end
+
   attr_accessor :api_token
 
   def initialize(oauth_url, oauth_token, api_token = nil, on_token_error = nil)
@@ -50,14 +55,17 @@ class Shoptet
 
   #TODO: return ['data'] already
   def shop_info api_params = {}
-    request 'https://api.myshoptet.com/api/eshop'
+    result = request 'https://api.myshoptet.com/api/eshop'
+    result['data']
   end
 
   def design_info api_params = {}
-    request 'https://api.myshoptet.com/api/eshop/design'
+    result = request 'https://api.myshoptet.com/api/eshop/design'
+
+    result['data']
   end
 
-  def warehouses api_params = {}
+  def stocks api_params = {}
     enumerize 'https://api.myshoptet.com/api/stocks', api_params
   end
 
@@ -67,6 +75,11 @@ class Shoptet
 
   def supplies warehouse_id, api_params = {}
     uri = "https://api.myshoptet.com/api/stocks/#{warehouse_id}/supplies"
+    enumerize uri, api_params
+  end
+
+  def stocks_movements warehouse_id, api_params = {}
+    uri = "https://api.myshoptet.com/api/stocks/#{warehouse_id}/movements"
     enumerize uri, api_params
   end
 
@@ -100,13 +113,13 @@ class Shoptet
   def order code, api_params = {}
     uri = "https://api.myshoptet.com/api/orders/#{code}"
     result = request assemble_uri(uri, api_params)
-    result.dig('data', 'order')
+    result.dig 'data', 'order'
   end
 
   def product guid, api_params = {}
     uri = "https://api.myshoptet.com/api/products/#{guid}"
     result = request assemble_uri(uri, api_params)
-    result.dig('data')
+    result['data']
   end
 
   def new_api_token
@@ -179,28 +192,10 @@ class Shoptet
       elsif errors.any? { |err| err["errorCode"] == 'invalid-token-no-rights' }
         raise InvalidTokenNoRights
       else
-        additional_data = {
-          uri: uri,
-          headers: scrub_sensitive_headers(headers)
-        }
-
-        raise Error.new result, additional_data
+        raise Error.new result
       end
     end
 
     token_errors
-  end
-
-  def scrub_sensitive_headers headers
-    scrubbed = {}
-
-    to_scrub = ['Shoptet-Access-Token', 'Authorization']
-    to_scrub.each do |header|
-      if headers[header]
-        scrubbed[header] = "#{headers[header][0..20]}..."
-      end
-    end
-
-    headers.merge scrubbed
   end
 end

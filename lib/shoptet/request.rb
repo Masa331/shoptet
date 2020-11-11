@@ -28,5 +28,16 @@ class Shoptet
     rescue Net::OpenTimeout
       retry if attempt < 4
     end
+
+    def self.post uri, body
+      req = Net::HTTP::Post.new uri
+      req.set_form_data body
+
+      res = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+        http.request req
+      end
+
+      JSON.parse res.body
+    end
   end
 end
