@@ -3,6 +3,15 @@ require 'net/http'
 #TODO: keep_alive_timeout ?
 
 class Shoptet
+  module UrlHelpers
+    def assemble_uri base, params = {}
+      u = URI(base)
+      u.query = URI.encode_www_form(params) if params.any?
+
+      u.to_s
+    end
+  end
+
   class Request
     def self.get uri, headers
       attempt ||= 0
