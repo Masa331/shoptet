@@ -11,7 +11,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.6'
+    '0.0.7'
   end
 
   def self.ar_on_token_error(model)
@@ -31,9 +31,9 @@ class Shoptet
     end
   end
 
-  def self.install uri, redirect_uri, client_id, client_secret, code
+  def self.install url, redirect_url, client_id, client_secret, code
     data = {
-      'redirect_uri' => redirect_uri,
+      'redirect_uri' => redirect_url,
       'client_id' => client_id,
       'client_secret' => client_secret,
       'code' => code,
@@ -41,19 +41,49 @@ class Shoptet
       'scope' => 'api'
     }
 
-    Shoptet::Request.post uri, data
+    Shoptet::Request.post url, data
+  end
+
+  def self.login_token url, code, client_id, client_secret, redirect_url
+    data = {
+      code: code,
+      grant_type: 'authorization_code',
+      client_id: client_id,
+      client_secret: client_secret,
+      redirect_uri: redirect_url,
+      scope: 'basic_eshop'
+    }
+
+    Shoptet::Request.post url, data
+  end
+
+  def self.basic_eshop url, access_token
+    Shoptet::Request.get url, { 'Authorization' => "Bearer #{access_token}" }
   end
 
   attr_accessor :api_token
 
-  def initialize(oauth_url, oauth_token, api_token = nil, on_token_error = nil)
+  def initialize oauth_url:, oauth_token:, shop_url:, client_id:, api_token: nil, on_token_error: nil
     @oauth_url = oauth_url
     @oauth_token = oauth_token
+    @shop_url = shop_url
+    @client_id = client_id
     @api_token = api_token
     @on_token_error = on_token_error || DEFAULT_ON_TOKEN_ERROR
   end
 
-  #TODO: return ['data'] already
+  def authorize_url redirect_url, state
+    query = {
+      client_id: @client_id,
+      state: state,
+      scope: 'basic_eshop',
+      response_type: 'code',
+      redirect_uri: redirect_url
+    }.to_query
+
+    URI("#{@shop_url}action/OAuthServer/authorize?#{query}").to_s
+  end
+
   def shop_info api_params = {}
     result = request 'https://api.myshoptet.com/api/eshop'
     result['data']
