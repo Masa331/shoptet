@@ -66,7 +66,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.8'
+    '0.0.9'
   end
 
   def self.ar_on_token_error(model)
@@ -125,6 +125,16 @@ class Shoptet
     @client_id = client_id
     @api_token = api_token
     @on_token_error = on_token_error || DEFAULT_ON_TOKEN_ERROR
+  end
+
+  def endpoints api_params = {}
+    enumerize 'https://api.myshoptet.com/api/system/endpoints', api_params
+  end
+
+  def endpoint_approved? endpoint
+    @approved_endpoints ||= endpoints
+
+    @approved_endpoints.any? { _1['endpoint'] == endpoint }
   end
 
   def authorize_url redirect_url, state
