@@ -66,7 +66,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.9'
+    '0.0.10'
   end
 
   def self.ar_on_token_error(model)
@@ -150,12 +150,14 @@ class Shoptet
   end
 
   def shop_info api_params = {}
-    result = request 'https://api.myshoptet.com/api/eshop'
+    url = assemble_uri 'https://api.myshoptet.com/api/eshop', api_params
+    result = request url
     result['data']
   end
 
   def design_info api_params = {}
-    result = request 'https://api.myshoptet.com/api/eshop/design'
+    url = assemble_uri 'https://api.myshoptet.com/api/eshop/design', api_params
+    result = request url
 
     result['data']
   end
