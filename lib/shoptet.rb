@@ -9,6 +9,7 @@ class Shoptet
   class AddonNotInstalled < StandardError; end
   class InvalidTokenNoRights < StandardError; end
   class EmptyRequestResponse < StandardError; end
+  class MaxPageReached < StandardError; end
 
   DEFAULT_ON_TOKEN_ERROR = -> (api) do
     api.api_token = api.new_api_token
@@ -67,7 +68,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.12'
+    '0.0.13'
   end
 
   def self.ar_on_token_error(model)
@@ -266,6 +267,8 @@ class Shoptet
         raise AddonNotInstalled
       elsif errors.any? { |err| err["errorCode"] == 'invalid-token-no-rights' }
         raise InvalidTokenNoRights
+      elsif errors.any? { |err| err["errorCode"] == 'page-not-found' && err['message'].include?('max page is') }
+        raise MaxPageReached
       else
         raise Error.new result
       end
