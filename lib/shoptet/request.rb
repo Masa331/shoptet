@@ -21,10 +21,10 @@ class Shoptet
 
       http = Net::HTTP.new parsed_uri.host, parsed_uri.port
       http.use_ssl = true
-      http.open_timeout = 10
-      http.read_timeout = 10
-      http.write_timeout = 10
-      http.ssl_timeout = 10
+      http.open_timeout = 60
+      http.read_timeout = 60
+      http.write_timeout = 60
+      http.ssl_timeout = 60
 
       request = Net::HTTP::Get.new parsed_uri
       headers.each do |key, value|

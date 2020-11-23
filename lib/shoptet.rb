@@ -66,7 +66,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.10'
+    '0.0.11'
   end
 
   def self.ar_on_token_error(model)
