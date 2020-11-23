@@ -8,6 +8,7 @@ class Shoptet
   class AddonSuspended < StandardError; end
   class AddonNotInstalled < StandardError; end
   class InvalidTokenNoRights < StandardError; end
+  class EmptyRequestResponse < StandardError; end
 
   DEFAULT_ON_TOKEN_ERROR = -> (api) do
     api.api_token = api.new_api_token
@@ -66,7 +67,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.11'
+    '0.0.12'
   end
 
   def self.ar_on_token_error(model)

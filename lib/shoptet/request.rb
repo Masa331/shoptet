@@ -32,8 +32,14 @@ class Shoptet
       end
 
       response = http.request request
+      parsed_body = JSON.parse response.body
 
-      JSON.parse response.body
+      unless parsed_body
+        message = "Status code: #{response.code}, url: #{uri}"
+        fail Shoptet::EmptyRequestResponse.new(message)
+      end
+
+      parsed_body
     rescue Net::OpenTimeout
       retry if attempt < 4
     end
