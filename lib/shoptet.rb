@@ -72,7 +72,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.15'
+    '0.0.16'
   end
 
   def self.ar_on_token_error(model)
@@ -275,7 +275,7 @@ class Shoptet
       message = err['message']
 
       code == EXPIRED_TOKEN_CODE ||
-        code == INVALID_TOKEN_CODE && message.include?("Invalid access token")
+        code == INVALID_TOKEN_CODE && (message.include?('Invalid access token') || message.include?('Missing access token'))
     end
 
     if error || non_token_errors.any?
