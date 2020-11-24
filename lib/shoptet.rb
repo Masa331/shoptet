@@ -275,7 +275,7 @@ class Shoptet
       message = err['message']
 
       code == EXPIRED_TOKEN_CODE ||
-        code == INVALID_TOKEN_CODE && message == "Invalid access token."
+        code == INVALID_TOKEN_CODE && message.include?("Invalid access token")
     end
 
     if error || non_token_errors.any?
