@@ -11,6 +11,10 @@ class Shoptet
   class EmptyRequestResponse < StandardError; end
   class MaxPageReached < StandardError; end
 
+  EXPIRED_TOKEN_CODE = 'expired-token'
+  INVALID_TOKEN_CODE = 'invalid-token'
+  ADDON_NOT_INSTALLED = 'Addon installation is not approved.'
+
   DEFAULT_ON_TOKEN_ERROR = -> (api) do
     api.api_token = api.new_api_token
   end
@@ -68,7 +72,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.13'
+    '0.0.14'
   end
 
   def self.ar_on_token_error(model)
@@ -249,6 +253,14 @@ class Shoptet
     end
   end
 
+  def suspended?
+    data = shop_info
+
+    false if data
+  rescue Shoptet::AddonSuspended
+    true
+  end
+
   private
 
   def enumerize base_url, filters = {}, data_key = nil
@@ -258,12 +270,18 @@ class Shoptet
   def handle_errors result, uri, headers
     error = result['error']
     errors = result['errors'] || []
-    token_errors, non_token_errors = errors.partition { |err| ['invalid-token', 'expired-token'].include? err['errorCode'] }
+    token_errors, non_token_errors = errors.partition do |err|
+      code = err['errorCode']
+      message = err['message']
+
+      code == EXPIRED_TOKEN_CODE ||
+        code == INVALID_TOKEN_CODE && message == "Invalid access token."
+    end
 
     if error || non_token_errors.any?
-      if error == 'addon_suspended'
+      if error == 'addon_suspended' || errors.any? { |e| e["errorCode"] == INVALID_TOKEN_CODE && e['message'] == ADDON_NOT_INSTALLED }
         raise AddonSuspended
-      elsif error == 'addon_not_installed'
+      elsif (error == 'addon_not_installed')
         raise AddonNotInstalled
       elsif errors.any? { |err| err["errorCode"] == 'invalid-token-no-rights' }
         raise InvalidTokenNoRights
