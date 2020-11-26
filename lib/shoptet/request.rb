@@ -39,6 +39,11 @@ class Shoptet
         fail Shoptet::EmptyRequestResponse.new(message)
       end
 
+      unless response.code == '200'
+        message = "Status code: #{response.code}, url: #{uri}"
+        fail Shoptet::UnsuccessfulApiResponse.new(message)
+      end
+
       parsed_body
     rescue Net::OpenTimeout
       retry if attempt < 4

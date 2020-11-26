@@ -10,6 +10,7 @@ class Shoptet
   class InvalidTokenNoRights < StandardError; end
   class EmptyRequestResponse < StandardError; end
   class MaxPageReached < StandardError; end
+  class UnsuccessfulApiResponse < StandardError; end
 
   EXPIRED_TOKEN_CODE = 'expired-token'
   INVALID_TOKEN_CODE = 'invalid-token'
@@ -72,7 +73,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.16'
+    '0.0.17'
   end
 
   def self.ar_on_token_error(model)
