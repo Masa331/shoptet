@@ -14,9 +14,6 @@ class Shoptet
 
   class Request
     def self.get uri, headers
-      attempt ||= 0
-      attempt += 1
-
       parsed_uri = URI(uri)
 
       http = Net::HTTP.new parsed_uri.host, parsed_uri.port
@@ -45,8 +42,6 @@ class Shoptet
       end
 
       parsed_body
-    rescue Net::OpenTimeout
-      retry if attempt < 4
     end
 
     def self.post uri, body
