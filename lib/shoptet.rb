@@ -72,7 +72,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.20'
+    '0.0.21'
   end
 
   def self.ar_on_token_error(model)
@@ -144,7 +144,7 @@ class Shoptet
   end
 
   def endpoints_approved? *endpoints_to_check
-    endpoints_to_check.all? { enpoint_approved? _1 }
+    endpoints_to_check.all? { endpoint_approved? _1 }
   end
 
   def authorize_url redirect_url, state
