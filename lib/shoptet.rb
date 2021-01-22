@@ -19,7 +19,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.22'
+    '0.0.23'
   end
 
   def self.ar_on_token_error(model)
@@ -153,7 +153,8 @@ class Shoptet
     enumerize('https://api.myshoptet.com/api/orders', api_params)
   end
 
-  def orders_changes api_params = {}
+  def orders_changes from:
+    api_params = { from: from.iso8601 }
     enumerize('https://api.myshoptet.com/api/orders/changes', api_params)
   end
 
