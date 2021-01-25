@@ -19,7 +19,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.23'
+    '0.0.24'
   end
 
   def self.ar_on_token_error(model)
@@ -165,6 +165,11 @@ class Shoptet
 
   def product guid, api_params = {}
     result = request("https://api.myshoptet.com/api/products/#{guid}", api_params)
+    result['data']
+  end
+
+  def product_by_code code, api_params = {}
+    result = request("https://api.myshoptet.com/api/products/code/#{code}", api_params)
     result['data']
   end
 
