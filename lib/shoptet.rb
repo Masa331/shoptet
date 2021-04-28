@@ -9,6 +9,7 @@ class Shoptet
   class InvalidTokenNoRights < StandardError; end
   class EmptyResponse < StandardError; end
   class MaxPageReached < StandardError; end
+  class StockNotFound < StandardError; end
 
   EXPIRED_TOKEN_CODE = 'expired-token'
   INVALID_TOKEN_CODE = 'invalid-token'
@@ -19,7 +20,7 @@ class Shoptet
   end
 
   def self.version
-    '0.0.24'
+    '0.0.25'
   end
 
   def self.ar_on_token_error(model)
@@ -234,6 +235,8 @@ class Shoptet
         raise AddonNotInstalled
       elsif errors.any? { |err| err["errorCode"] == 'invalid-token-no-rights' }
         raise InvalidTokenNoRights
+      elsif errors.any? { |err| err["errorCode"] == 'stock-not-found' }
+        raise StockNotFound
       elsif errors.any? { |err| err["errorCode"] == 'page-not-found' && err['message'].include?('max page is') }
         raise MaxPageReached
       else
