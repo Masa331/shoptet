@@ -25,6 +25,8 @@ class Shoptet
       end
 
       parsed_body
+    rescue Net::OpenTimeout => e
+      raise(e.class, "#{e.message} - on url #{url}")
     end
 
     def self.post url, body
