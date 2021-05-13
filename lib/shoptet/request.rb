@@ -16,7 +16,7 @@ class Shoptet
         request[key] = value
       end
 
-      response = http.request(request)
+      response = handle_net_timeouts { http.request(request) }
       parsed_body = Oj.load(response.body, mode: :compat)
 
       unless parsed_body
@@ -25,8 +25,6 @@ class Shoptet
       end
 
       parsed_body
-    rescue Net::OpenTimeout => e
-      raise(e.class, "#{e.message} - on url #{url}")
     end
 
     def self.post url, body
@@ -34,10 +32,26 @@ class Shoptet
       request.set_form_data(body)
 
       response = Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
-        http.request(request)
+        handle_net_timeouts { http.request(request) }
       end
 
       Oj.load(response.body, mode: :compat)
+    end
+
+    private
+
+    def self.handle_net_timeouts
+      attempts = 0
+
+      begin
+        yield
+      rescue Net::OpenTimeout
+        raise if retries > 3
+
+        retries += 1
+
+        retry
+      end
     end
   end
 end
