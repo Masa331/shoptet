@@ -1,5 +1,5 @@
 require 'net/http'
-require 'oj'
+require 'json'
 
 class Shoptet
   class Request
@@ -17,7 +17,7 @@ class Shoptet
       end
 
       response = handle_net_timeouts { http.request(request) }
-      parsed_body = Oj.load(response.body, mode: :compat)
+      parsed_body = JSON.parse(response.body)
 
       unless parsed_body
         message = "Status code: #{response.code}, url: #{url}"
@@ -35,7 +35,7 @@ class Shoptet
         handle_net_timeouts { http.request(request) }
       end
 
-      Oj.load(response.body, mode: :compat)
+      JSON.parse(response.body)
     end
 
     private
