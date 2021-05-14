@@ -46,9 +46,9 @@ class Shoptet
       begin
         yield
       rescue Net::OpenTimeout
-        raise if retries > 3
+        raise if attempts > 3
 
-        retries += 1
+        attempts += 1
 
         retry
       end
