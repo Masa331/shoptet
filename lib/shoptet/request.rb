@@ -41,16 +41,10 @@ class Shoptet
     private
 
     def self.handle_net_timeouts
-      attempts = 0
-
       begin
         yield
       rescue Net::OpenTimeout
-        raise if attempts > 3
-
-        attempts += 1
-
-        retry
+        yield
       end
     end
   end
