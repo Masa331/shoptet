@@ -6,10 +6,10 @@ class Shoptet
     def self.get url, headers
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
-      http.open_timeout = 5
-      http.read_timeout = 5
-      http.write_timeout = 5
-      http.ssl_timeout = 5
+      http.open_timeout = 30
+      http.read_timeout = 30
+      http.write_timeout = 30
+      http.ssl_timeout = 30
 
       request = Net::HTTP::Get.new(url)
       headers.each do |key, value|
