@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Shoptet
   class ApiEnumerator < SimpleDelegator
     def initialize base_url, filters, data_key, api
@@ -10,10 +12,10 @@ class Shoptet
         first_page.dig('data', @data_key).each { y.yield _1 }
 
         if total_pages > 1
-          other_pages = 2..(total_pages - 1)
-          other_pages.each do |page|
-            result = @api.request(base_url, filters.merge(page: page))
-            result.dig('data', @data_key).each { y.yield _1 }
+          (2..(total_pages - 1)).each do |page|
+            @api.request(base_url, filters.merge(page: page))
+              .dig('data', @data_key)
+              .each { y.yield _1 }
           end
 
           last_page.dig('data', @data_key).each { y.yield _1 }

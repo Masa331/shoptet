@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'delegate'
 require_relative 'shoptet/request'
 require_relative 'shoptet/api_enumerator'
