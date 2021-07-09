@@ -113,12 +113,12 @@ class Shoptet
   end
 
   def shop_info api_params = {}
-    result = request('https://api.myshoptet.com/api/eshop', api_params)
+    result = get('https://api.myshoptet.com/api/eshop', api_params)
     result['data']
   end
 
   def design_info api_params = {}
-    result = request('https://api.myshoptet.com/api/eshop/design', api_params)
+    result = get('https://api.myshoptet.com/api/eshop/design', api_params)
 
     result['data']
   end
@@ -165,22 +165,22 @@ class Shoptet
   end
 
   def order code, api_params = {}
-    result = request("https://api.myshoptet.com/api/orders/#{code}", api_params)
+    result = get("https://api.myshoptet.com/api/orders/#{code}", api_params)
     result.dig('data', 'order')
   end
 
   def product guid, api_params = {}
-    result = request("https://api.myshoptet.com/api/products/#{guid}", api_params)
+    result = get("https://api.myshoptet.com/api/products/#{guid}", api_params)
     result['data']
   end
 
   def product_by_code code, api_params = {}
-    result = request("https://api.myshoptet.com/api/products/code/#{code}", api_params)
+    result = get("https://api.myshoptet.com/api/products/code/#{code}", api_params)
     result['data']
   end
 
   def template_includes
-    result = request("https://api.myshoptet.com/api/template-include")
+    result = get("https://api.myshoptet.com/api/template-include")
     result['data']
   end
 
@@ -193,7 +193,7 @@ class Shoptet
     result.fetch('access_token')
   end
 
-  def request url, api_params = {}, retry_on_token_error = true
+  def get url, api_params = {}, retry_on_token_error = true
     url = URI(url)
     url.query = URI.encode_www_form(api_params) if api_params.any?
 
@@ -206,7 +206,7 @@ class Shoptet
     if token_errors.any?
       if retry_on_token_error
         @on_token_error.call(self)
-        request(url, api_params, false)
+        get(url, api_params, false)
       else
         raise Error.new(result)
       end
