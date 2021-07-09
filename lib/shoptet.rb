@@ -179,6 +179,11 @@ class Shoptet
     result['data']
   end
 
+  def template_includes
+    result = request("https://api.myshoptet.com/api/template-include")
+    result['data']
+  end
+
   def new_api_token
     headers = { 'Authorization' => "Bearer #{@oauth_token}" }
 
